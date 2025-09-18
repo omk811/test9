@@ -36,6 +36,7 @@
             font-size: 16px;
             color: #555;
             margin-bottom: 20px;
+            display: none; /* لن يظهر إلا بعد البدء */
         }
 
         .question {
@@ -44,6 +45,7 @@
             color: #2c3e50;
             min-height: 60px;
             line-height: 1.5;
+            display: none; /* لن يظهر إلا بعد البدء */
         }
 
         .options {
@@ -52,6 +54,7 @@
             gap: 15px;
             margin: 20px 0;
             align-items: center;
+            display: none; /* لن يظهر إلا بعد البدء */
         }
 
         .options button {
@@ -103,6 +106,7 @@
             margin: 20px 0;
             color: #27ae60;
             font-weight: bold;
+            display: none; /* لن يظهر إلا بعد البدء */
         }
 
         .feedback {
@@ -112,6 +116,7 @@
             font-weight: 600;
             color: #c0392b;
             animation: fadeIn 0.5s;
+            display: none; /* لن يظهر إلا بعد البدء */
         }
 
         @keyframes fadeIn {
@@ -129,6 +134,7 @@
             border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: none; /* لن يظهر إلا بعد البدء */
         }
 
         .next-btn:hover {
@@ -140,22 +146,67 @@
             cursor: not-allowed;
         }
 
+        .start-btn {
+            margin: 40px auto;
+            padding: 18px 40px;
+            font-size: 22px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
         .emoji {
             font-size: 30px;
             margin: 10px 0;
+        }
+
+        .welcome-screen {
+            display: block;
+            animation: fadeInUp 1s;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>🎮 لعبة همزة الوصل والقطع</h1>
-        <div class="progress" id="progress">السؤال: 0 / 0</div>
-        <div class="question" id="question">اضغط "ابدأ" للبدء!</div>
-        <div class="options" id="options"></div>
-        <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>التالي</button>
-        <div class="score" id="score">النقاط: 0</div>
-        <div class="feedback" id="feedback"></div>
-        <button onclick="startGame()" style="margin-top: 20px; padding: 12px 25px; font-size: 18px; background-color: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer;">إعادة اللعبة</button>
+
+        <!-- الشاشة الترحيبية -->
+        <div class="welcome-screen">
+            <p style="font-size: 20px; color: #333; margin: 20px 0;">
+                اختبر معرفتك بهمزة الوصل والقطع في الكلمات العربية!
+            </p>
+            <button class="start-btn" onclick="startGame()">ابدأ اللعبة الآن!</button>
+        </div>
+
+        <!-- واجهة اللعبة (مخفية حتى البدء) -->
+        <div id="game-ui" style="display: none;">
+            <div class="progress" id="progress">السؤال: 0 / 0</div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>التالي</button>
+            <div class="score" id="score">النقاط: 0</div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <button onclick="startGame()" style="margin-top: 25px; padding: 12px 25px; font-size: 18px; background-color: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; display: block; margin-left: auto; margin-right: auto;">
+            إعادة اللعبة
+        </button>
     </div>
 
     <script>
@@ -169,28 +220,33 @@
             { type: "choice", word: "ابن", correct: "وصل" },
             { type: "choice", word: "إيمان", correct: "قطع" },
 
-            // المستوى الثاني: أكمل الجملة (الهمزة مفقودة أو خاطئة)
+            // المستوى الثاني: أكمل الجملة
             { type: "fill", sentence: "___ ذهب إلى المدرسة.", options: ["أحمد", "احمد"], correct: "أحمد" },
             { type: "fill", sentence: "___ يعمل بجد.", options: ["استاذ", "أستاذ"], correct: "أستاذ" },
             { type: "fill", sentence: "___ عَلِمَ الحق.", options: ["إنسان", "انسان"], correct: "إنسان" },
 
-            // المستوى الثالث: صحح الجملة (تصحيح همزة أو تشكيل)
+            // المستوى الثالث: صحح الجملة
             { type: "correct", sentence: "انسان يحب القراءة", correct: "إنسان يحب القراءة" },
-            { type: "correct", sentence: "احترام الاخرين واجب", correct: "احترام الآخرين واجب" }, // حذفت همزة "الآخرين"
-            { type: "correct", sentence: "ابن خالد كريم", correct: "ابنُ خالدٍ كريمٌ" } // تشكيل غير ضروري هنا، لكن لنغيرها لتصبح:
-            // استبدلت بـ:
-            { type: "correct", sentence: "أبو أحمد قائد", correct: "أبو أحمد قائد" }, // صحيحة — لكن نحتاج خطأ!
-            // بدلاً من ذلك:
-            { type: "correct", sentence: "ابو أحمد قائد", correct: "أبو أحمد قائد" } // حذف همزة "أبو"
+            { type: "correct", sentence: "احترام الاخرين واجب", correct: "احترام الآخرين واجب" },
+            { type: "correct", sentence: "ابو أحمد قائد", correct: "أبو أحمد قائد" }
         ];
 
         function startGame() {
+            // إخفاء الشاشة الترحيبية
+            document.querySelector('.welcome-screen').style.display = 'none';
+            // إظهار واجهة اللعبة
+            document.getElementById('game-ui').style.display = 'block';
+
+            // إعادة تعيين المتغيرات
             score = 0;
             currentQuestion = 0;
+
+            // تحديث العناصر
             document.getElementById("score").innerText = "النقاط: " + score;
             document.getElementById("feedback").innerText = "";
             document.getElementById("nextBtn").disabled = true;
-            document.getElementById("options").innerHTML = "";
+
+            // عرض أول سؤال
             showQuestion();
         }
 
@@ -203,6 +259,7 @@
                     <p>شكرًا لك على اللعب!</p>
                 `;
                 document.getElementById("nextBtn").disabled = true;
+                document.getElementById("nextBtn").style.display = "none";
                 return;
             }
 
@@ -210,6 +267,12 @@
             document.getElementById("question").innerText = getQuestionText(q);
             document.getElementById("options").innerHTML = generateOptions(q);
             document.getElementById("progress").innerText = `السؤال: ${currentQuestion + 1} من ${questions.length}`;
+            document.getElementById("progress").style.display = "block";
+            document.getElementById("question").style.display = "block";
+            document.getElementById("options").style.display = "flex";
+            document.getElementById("score").style.display = "block";
+            document.getElementById("feedback").style.display = "block";
+            document.getElementById("nextBtn").style.display = "block";
             document.getElementById("feedback").innerText = "";
             document.getElementById("nextBtn").disabled = true;
         }
@@ -245,11 +308,10 @@
             const q = questions[currentQuestion];
             const buttons = document.querySelectorAll('.options button');
 
-            // إزالة أي فئات سابقة
             buttons.forEach(btn => btn.classList.remove('correct', 'wrong'));
 
             if (answer === q.correct) {
-                score = Math.max(0, score + 10); // لا تسمح بالسالب
+                score = Math.max(0, score + 10);
                 document.getElementById("feedback").innerText = "✅ إجابة صحيحة!";
                 document.getElementById("feedback").style.color = "#27ae60";
                 buttons.forEach(btn => {
@@ -276,8 +338,8 @@
             showQuestion();
         }
 
-        // تفعيل الصوت الخفيف (بدون ملفات صوتية — باستخدام Web Audio API)
         function playSound(type) {
+            if (!window.AudioContext && !window.webkitAudioContext) return; // تجنب الأخطاء في بعض المتصفحات
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -290,20 +352,16 @@
                 oscillator.frequency.value = 660;
                 gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.3);
             } else if (type === 'wrong') {
                 oscillator.type = 'square';
                 oscillator.frequency.value = 300;
                 gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.2);
             }
-        }
 
-        // تحميل أول سؤال عند الدخول
-        window.onload = startGame;
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
     </script>
 </body>
 </html>
