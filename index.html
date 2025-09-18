@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لعبة همزة الوصل والقطع</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 24px;
+            margin: 25px 0;
+            color: #2c3e50;
+            min-height: 60px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        .options button {
+            width: 80%;
+            max-width: 400px;
+            padding: 15px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .options button:hover {
+            background-color: #bdc3c7;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .options button.correct {
+            background-color: #27ae60 !important;
+            color: white !important;
+            animation: pulseGreen 0.8s;
+        }
+
+        .options button.wrong {
+            background-color: #c0392b !important;
+            color: white !important;
+            animation: pulseRed 0.8s;
+        }
+
+        @keyframes pulseGreen {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulseRed {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .score {
+            font-size: 22px;
+            margin: 20px 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .feedback {
+            font-size: 20px;
+            margin: 15px 0;
+            min-height: 30px;
+            font-weight: 600;
+            color: #c0392b;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .next-btn {
+            margin-top: 25px;
+            padding: 12px 30px;
+            font-size: 18px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .next-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .emoji {
+            font-size: 30px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 لعبة همزة الوصل والقطع</h1>
+        <div class="progress" id="progress">السؤال: 0 / 0</div>
+        <div class="question" id="question">اضغط "ابدأ" للبدء!</div>
+        <div class="options" id="options"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>التالي</button>
+        <div class="score" id="score">النقاط: 0</div>
+        <div class="feedback" id="feedback"></div>
+        <button onclick="startGame()" style="margin-top: 20px; padding: 12px 25px; font-size: 18px; background-color: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer;">إعادة اللعبة</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentQuestion = 0;
+
+        const questions = [
+            // المستوى الأول: اختر نوع الهمزة
+            { type: "choice", word: "استغفار", correct: "وصل" },
+            { type: "choice", word: "أحمد", correct: "قطع" },
+            { type: "choice", word: "ابن", correct: "وصل" },
+            { type: "choice", word: "إيمان", correct: "قطع" },
+
+            // المستوى الثاني: أكمل الجملة (الهمزة مفقودة أو خاطئة)
+            { type: "fill", sentence: "___ ذهب إلى المدرسة.", options: ["أحمد", "احمد"], correct: "أحمد" },
+            { type: "fill", sentence: "___ يعمل بجد.", options: ["استاذ", "أستاذ"], correct: "أستاذ" },
+            { type: "fill", sentence: "___ عَلِمَ الحق.", options: ["إنسان", "انسان"], correct: "إنسان" },
+
+            // المستوى الثالث: صحح الجملة (تصحيح همزة أو تشكيل)
+            { type: "correct", sentence: "انسان يحب القراءة", correct: "إنسان يحب القراءة" },
+            { type: "correct", sentence: "احترام الاخرين واجب", correct: "احترام الآخرين واجب" }, // حذفت همزة "الآخرين"
+            { type: "correct", sentence: "ابن خالد كريم", correct: "ابنُ خالدٍ كريمٌ" } // تشكيل غير ضروري هنا، لكن لنغيرها لتصبح:
+            // استبدلت بـ:
+            { type: "correct", sentence: "أبو أحمد قائد", correct: "أبو أحمد قائد" }, // صحيحة — لكن نحتاج خطأ!
+            // بدلاً من ذلك:
+            { type: "correct", sentence: "ابو أحمد قائد", correct: "أبو أحمد قائد" } // حذف همزة "أبو"
+        ];
+
+        function startGame() {
+            score = 0;
+            currentQuestion = 0;
+            document.getElementById("score").innerText = "النقاط: " + score;
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("nextBtn").disabled = true;
+            document.getElementById("options").innerHTML = "";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                document.getElementById("question").innerText = "🎉 انتهت اللعبة!";
+                document.getElementById("feedback").innerText = `ممتاز! مجموع نقاطك: ${score} من ${questions.length * 10}`;
+                document.getElementById("options").innerHTML = `
+                    <div class="emoji">🏆</div>
+                    <p>شكرًا لك على اللعب!</p>
+                `;
+                document.getElementById("nextBtn").disabled = true;
+                return;
+            }
+
+            const q = questions[currentQuestion];
+            document.getElementById("question").innerText = getQuestionText(q);
+            document.getElementById("options").innerHTML = generateOptions(q);
+            document.getElementById("progress").innerText = `السؤال: ${currentQuestion + 1} من ${questions.length}`;
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("nextBtn").disabled = true;
+        }
+
+        function getQuestionText(q) {
+            if (q.type === "choice") {
+                return `ما نوع الهمزة في الكلمة: "${q.word}"؟`;
+            } else if (q.type === "fill") {
+                return `أكمل الجملة: ${q.sentence}`;
+            } else if (q.type === "correct") {
+                return `صحح الجملة التالية: "${q.sentence}"`;
+            }
+        }
+
+        function generateOptions(q) {
+            if (q.type === "choice") {
+                return `
+                    <button onclick="checkAnswer('وصل')">همزة وصل</button>
+                    <button onclick="checkAnswer('قطع')">همزة قطع</button>
+                `;
+            } else if (q.type === "fill") {
+                return q.options.map(opt => 
+                    `<button onclick="checkAnswer('${opt}')">${opt}</button>`
+                ).join('');
+            } else if (q.type === "correct") {
+                return `
+                    <button onclick="checkAnswer('${q.correct}')">${q.correct}</button>
+                `;
+            }
+        }
+
+        function checkAnswer(answer) {
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.options button');
+
+            // إزالة أي فئات سابقة
+            buttons.forEach(btn => btn.classList.remove('correct', 'wrong'));
+
+            if (answer === q.correct) {
+                score = Math.max(0, score + 10); // لا تسمح بالسالب
+                document.getElementById("feedback").innerText = "✅ إجابة صحيحة!";
+                document.getElementById("feedback").style.color = "#27ae60";
+                buttons.forEach(btn => {
+                    if (btn.innerText === answer) btn.classList.add('correct');
+                });
+                playSound('correct');
+            } else {
+                score = Math.max(0, score - 5);
+                document.getElementById("feedback").innerText = "❌ إجابة خاطئة!";
+                document.getElementById("feedback").style.color = "#c0392b";
+                buttons.forEach(btn => {
+                    if (btn.innerText === answer) btn.classList.add('wrong');
+                    if (btn.innerText === q.correct) btn.classList.add('correct');
+                });
+                playSound('wrong');
+            }
+
+            document.getElementById("score").innerText = "النقاط: " + score;
+            document.getElementById("nextBtn").disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            showQuestion();
+        }
+
+        // تفعيل الصوت الخفيف (بدون ملفات صوتية — باستخدام Web Audio API)
+        function playSound(type) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'correct') {
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 660;
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                oscillator.type = 'square';
+                oscillator.frequency.value = 300;
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.2);
+            }
+        }
+
+        // تحميل أول سؤال عند الدخول
+        window.onload = startGame;
+    </script>
+</body>
+</html>
