@@ -2,49 +2,68 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة همزة الوصل والقطع</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --correct-color: #27ae60;
+            --wrong-color: #c0392b;
+            --text-color: #333;
+            --light-text: #fff;
+            --card-bg: rgba(255, 255, 255, 0.92);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
         
         body {
             font-family: 'Cairo', sans-serif;
             direction: rtl;
             text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: var(--text-color);
             min-height: 100vh;
-        }
-
-        h1 {
-            color: #fff;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .game-container {
-            background-color: rgba(255, 255, 255, 0.92);
+            background-color: var(--card-bg);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
             max-width: 700px;
             margin: 0 auto;
             backdrop-filter: blur(10px);
         }
 
+        h1 {
+            color: var(--light-text);
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
         .progress {
-            font-size: 16px;
+            font-size: 0.9rem;
             color: #555;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: none;
         }
 
         .question {
-            font-size: 24px;
-            margin: 25px 0;
+            font-size: 1.2rem;
+            margin: 20px 0;
             color: #2c3e50;
             min-height: 60px;
             line-height: 1.5;
@@ -55,17 +74,17 @@
         .options {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             margin: 20px 0;
             align-items: center;
             display: none;
         }
 
         .options button {
-            width: 80%;
+            width: 100%;
             max-width: 400px;
-            padding: 15px 20px;
-            font-size: 18px;
+            padding: 12px 15px;
+            font-size: 1rem;
             border: none;
             border-radius: 12px;
             cursor: pointer;
@@ -83,13 +102,13 @@
         }
 
         .options button.correct {
-            background-color: #27ae60 !important;
+            background-color: var(--correct-color) !important;
             color: white !important;
             animation: pulseGreen 0.8s;
         }
 
         .options button.wrong {
-            background-color: #c0392b !important;
+            background-color: var(--wrong-color) !important;
             color: white !important;
             animation: pulseRed 0.8s;
         }
@@ -107,20 +126,20 @@
         }
 
         .score {
-            font-size: 22px;
+            font-size: 1.1rem;
             margin: 20px 0;
-            color: #27ae60;
+            color: var(--correct-color);
             font-weight: bold;
             display: none;
             font-family: 'Cairo', sans-serif;
         }
 
         .feedback {
-            font-size: 20px;
+            font-size: 1rem;
             margin: 15px 0;
             min-height: 30px;
             font-weight: 600;
-            color: #c0392b;
+            color: var(--wrong-color);
             animation: fadeIn 0.5s;
             display: none;
             font-family: 'Cairo', sans-serif;
@@ -132,9 +151,9 @@
         }
 
         .next-btn {
-            margin-top: 25px;
-            padding: 12px 30px;
-            font-size: 18px;
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 1rem;
             background-color: #3498db;
             color: white;
             border: none;
@@ -156,9 +175,9 @@
         }
 
         .start-btn {
-            margin: 40px auto;
-            padding: 18px 40px;
-            font-size: 22px;
+            margin: 30px auto;
+            padding: 15px 30px;
+            font-size: 1.2rem;
             background-color: #e74c3c;
             color: white;
             border: none;
@@ -168,6 +187,7 @@
             transition: all 0.3s;
             font-weight: 700;
             font-family: 'Cairo', sans-serif;
+            display: block;
         }
 
         .start-btn:hover {
@@ -177,7 +197,7 @@
         }
 
         .emoji {
-            font-size: 30px;
+            font-size: 1.5rem;
             margin: 10px 0;
         }
 
@@ -192,8 +212,8 @@
         }
 
         .resource-links {
-            margin-top: 40px;
-            padding: 20px;
+            margin-top: 30px;
+            padding: 15px;
             background-color: #f8f9fa;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -202,20 +222,21 @@
 
         .resource-links h3 {
             color: #2c3e50;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-family: 'Cairo', sans-serif;
             font-weight: 700;
+            font-size: 1.1rem;
         }
 
         .resource-links a {
             display: block;
-            margin: 12px 0;
-            padding: 12px;
+            margin: 10px 0;
+            padding: 10px;
             background-color: #3498db;
             color: white;
             text-decoration: none;
             border-radius: 10px;
-            font-size: 17px;
+            font-size: 0.9rem;
             transition: background-color 0.3s;
             font-family: 'Cairo', sans-serif;
             font-weight: 600;
@@ -226,10 +247,114 @@
         }
 
         .footer-note {
-            margin-top: 30px;
-            font-size: 14px;
+            margin-top: 20px;
+            font-size: 0.8rem;
             color: #aaa;
             font-family: 'Cairo', sans-serif;
+        }
+        
+        .restart-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            width: 100%;
+            max-width: 200px;
+        }
+        
+        /* وسائط استعلام للشاشات المتوسطة والكبيرة */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-container {
+                padding: 30px;
+            }
+            
+            .question {
+                font-size: 1.5rem;
+            }
+            
+            .options button {
+                padding: 15px 20px;
+                font-size: 1.1rem;
+            }
+            
+            .progress {
+                font-size: 1rem;
+            }
+            
+            .score {
+                font-size: 1.3rem;
+            }
+            
+            .feedback {
+                font-size: 1.2rem;
+            }
+            
+            .next-btn {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+            }
+            
+            .start-btn {
+                padding: 18px 40px;
+                font-size: 1.4rem;
+            }
+            
+            .resource-links h3 {
+                font-size: 1.3rem;
+            }
+            
+            .resource-links a {
+                font-size: 1rem;
+            }
+        }
+        
+        /* وسائط استعلام للشاشات الصغيرة جداً */
+        @media (max-width: 360px) {
+            body {
+                padding: 10px;
+            }
+            
+            .game-container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .question {
+                font-size: 1rem;
+                margin: 15px 0;
+            }
+            
+            .options {
+                gap: 8px;
+            }
+            
+            .options button {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .start-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+                margin: 20px auto;
+            }
         }
     </style>
 </head>
@@ -239,7 +364,7 @@
 
         <!-- الشاشة الترحيبية -->
         <div class="welcome-screen">
-            <p style="font-size: 20px; color: #333; margin: 20px 0;">
+            <p style="font-size: 1.1rem; color: #333; margin: 20px 0;">
                 اختبر معرفتك بهمزة الوصل والقطع في الكلمات العربية!
             </p>
             <button class="start-btn" onclick="startGame()">ابدأ اللعبة الآن!</button>
@@ -255,9 +380,7 @@
             <div class="feedback" id="feedback"></div>
         </div>
 
-        <button onclick="startGame()" style="margin-top: 25px; padding: 12px 25px; font-size: 18px; background-color: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; display: block; margin-left: auto; margin-right: auto; font-family: 'Cairo', sans-serif; font-weight: 600;">
-            إعادة اللعبة
-        </button>
+        <button class="restart-btn" onclick="startGame()">إعادة اللعبة</button>
 
         <!-- روابط الموارد التعليمية -->
         <div class="resource-links">
